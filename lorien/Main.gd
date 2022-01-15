@@ -506,6 +506,12 @@ func _on_toggle_brush_color_picker() -> void:
 func _on_BrushColorPicker_color_changed(color: Color) -> void:
 	_toolbar.set_brush_color(color)
 	_canvas.set_brush_color(color)
+	if Network.connected:
+		rpc('brush_color_changed', color)
+
+remote func sync_brush_color(color: Color):
+	_toolbar.set_brush_color(color)
+	_canvas.set_brush_color(color)
 
 # --------------------------------------------------------------------------------------------------
 func _on_BrushColorPicker_closed() -> void:

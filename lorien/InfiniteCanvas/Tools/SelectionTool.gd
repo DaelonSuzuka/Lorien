@@ -243,7 +243,7 @@ func _deselect_marked_strokes() -> void:
 		s.modulate = Color.white
 
 # ------------------------------------------------------------------------------------------------
-func deselect_all_strokes() -> void:
+remote func deselect_all_strokes() -> void:
 	var selected_strokes: Array = get_selected_strokes()
 	if selected_strokes.size():
 		get_tree().set_group(GROUP_SELECTED_STROKES, "modulate", Color.white)

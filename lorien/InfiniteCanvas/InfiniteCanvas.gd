@@ -60,11 +60,15 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("deselect_all_strokes"):
 		if _active_tool == _selection_tool:
 			_selection_tool.deselect_all_strokes()
+			if Network.connected:
+				_selection_tool.rpc('deselect_all_strokes')
 	
 	# Delete selected strokes with shortcut key
 	if Input.is_action_just_pressed("delete_selected_strokes"):
 		if _active_tool == _selection_tool:
 			_delete_selected_strokes()
+			if Network.connected:
+				rpc('_delete_selected_strokes')
 
 # -------------------------------------------------------------------------------------------------
 func center_to_mouse() -> void:
@@ -73,10 +77,13 @@ func center_to_mouse() -> void:
 		_camera.do_center(screen_space_cursor_pos)
 
 # -------------------------------------------------------------------------------------------------
-remote func use_tool(tool_type: int) -> void:
-	if Network.connected:
-		rpc('use_tool', tool_type)
 
+func use_tool(tool_type: int) -> void:
+	_use_tool(tool_type)
+	if Network.connected:
+		rpc('_use_tool', tool_type)
+
+remote func _use_tool(tool_type: int) -> void:
 	_active_tool.enabled = false
 	_selection_tool.deselect_all_strokes()
 	
@@ -323,7 +330,7 @@ func _on_camera_moved(pos: Vector2) -> void:
 	_current_project.dirty = true
 
 # -------------------------------------------------------------------------------------------------
-func _delete_selected_strokes() -> void:
+remote func _delete_selected_strokes() -> void:
 	var strokes := _selection_tool.get_selected_strokes()
 	if !strokes.empty():
 		_current_project.undo_redo.create_action("Delete Selection")
