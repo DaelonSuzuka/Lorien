@@ -220,6 +220,16 @@ gdscript/warnings/unused_argument=false
 gdscript/warnings/narrowing_conversion=false
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
+multirun/server/number_of_windows=3
+multirun/server/window_distance=500
+multirun/server/add_custom_args=true
+multirun/server/first_window_args="--server"
+multirun/server/other_window_args="--connect"
+multirun/client/number_of_windows=2
+multirun/client/window_distance=500
+multirun/client/add_custom_args=true
+multirun/client/first_window_args="--connect"
+multirun/client/other_window_args="--server"
 
 [display]
 
@@ -229,6 +239,10 @@ window/size/test_width=1440
 window/size/test_height=810
 window/dpi/allow_hidpi=true
 window/vsync/use_vsync=false
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/multirun/plugin.cfg" )
 
 [input]
 
