@@ -31,6 +31,11 @@ func _ready() -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	if !visible:
 		return
 	elif event is InputEventMouseButton && event.pressed:

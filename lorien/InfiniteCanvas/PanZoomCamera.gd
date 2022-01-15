@@ -33,6 +33,11 @@ var events = {}
 var last_drag_distance = 0
 
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	if _is_input_enabled:
 		if event is InputEventMouseButton:
 			
@@ -129,7 +134,6 @@ func enable_input() -> void:
 
 func disable_input() -> void:
 	_is_input_enabled = false
-	
 # -------------------------------------------------------------------------------------------------
 func xform(pos: Vector2) -> Vector2:
 	return (pos * zoom) + offset

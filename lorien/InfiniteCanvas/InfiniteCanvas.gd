@@ -46,6 +46,11 @@ func _ready():
 
 # -------------------------------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		info.current_pressure = event.pressure
 
@@ -68,7 +73,10 @@ func center_to_mouse() -> void:
 		_camera.do_center(screen_space_cursor_pos)
 
 # -------------------------------------------------------------------------------------------------
-func use_tool(tool_type: int) -> void:
+remote func use_tool(tool_type: int) -> void:
+	if Network.connected:
+		rpc('use_tool', tool_type)
+
 	_active_tool.enabled = false
 	_selection_tool.deselect_all_strokes()
 	

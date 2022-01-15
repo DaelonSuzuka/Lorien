@@ -85,6 +85,12 @@ func _ready():
 	# Apply state from previous session
 	_apply_state()
 
+	if Args.server: # set up server stuff
+		Network.create_server()
+		_canvas.enable()
+	elif Args.connect: # automatically connect to server
+		Network.join_server()
+
 # -------------------------------------------------------------------------------------------------
 func _notification(what):
 	if NOTIFICATION_WM_QUIT_REQUEST == what:
@@ -468,11 +474,13 @@ func _on_open_url(url: String) -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _on_InfiniteCanvas_mouse_entered():
-	_canvas.enable()
+	if !Network.connected:
+		_canvas.enable()
 
 # -------------------------------------------------------------------------------------------------
 func _on_InfiniteCanvas_mouse_exited():
-	_canvas.disable()
+	if !Network.connected:
+		_canvas.disable()
 
 # --------------------------------------------------------------------------------------------------
 func _on_export_confirmed(path: String):
