@@ -21,14 +21,23 @@ func set_zoom_level(zoom_level: float) -> void:
 	zoom = Vector2(_current_zoom_level, _current_zoom_level)
 
 # -------------------------------------------------------------------------------------------------
-func do_center(screen_space_center_point: Vector2) -> void:
-	var screen_space_center := get_viewport().size / 2
-	var delta := screen_space_center - screen_space_center_point
-	get_viewport().warp_mouse(screen_space_center)
-	_do_pan(delta)
-	
-# -------------------------------------------------------------------------------------------------
+
+var target_return_enabled = true
+var target_return_rate = 0.02
+var min_zoom = 0.5
+var max_zoom = 2
+var zoom_sensitivity = 10
+var zoom_speed = 0.05
+
+var events = {}
+var last_drag_distance = 0
+
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	if _is_input_enabled:
 		if event is InputEventMouseButton:
 			
@@ -56,6 +65,28 @@ func _input(event: InputEvent) -> void:
 				_do_pan(event.relative)
 			elif _zoom_active:
 				_do_zoom_drag(event.relative.y)
+
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			events[event.index] = event
+		else:
+			events.erase(event.index)
+	elif event is InputEventScreenDrag:
+		events[event.index] = event
+		
+		if events.size() == 1:
+			_do_pan(event.relative)
+
+		elif events.size() == 2:
+			var touches = []
+			for i in events:
+				touches.append(events[i])
+			var drag_distance = touches[0].position.distance_to(touches[1].position)
+			if abs(drag_distance - last_drag_distance) > zoom_sensitivity:
+				var new_zoom = (1 + zoom_speed) if drag_distance < last_drag_distance else (1 - zoom_speed)
+				new_zoom = clamp(zoom.x * new_zoom, min_zoom, max_zoom)
+				zoom = Vector2.ONE * new_zoom
+				last_drag_distance = drag_distance
 
 # -------------------------------------------------------------------------------------------------
 func _do_pan(pan: Vector2) -> void:
@@ -103,7 +134,6 @@ func enable_input() -> void:
 
 func disable_input() -> void:
 	_is_input_enabled = false
-	
 # -------------------------------------------------------------------------------------------------
 func xform(pos: Vector2) -> Vector2:
 	return (pos * zoom) + offset

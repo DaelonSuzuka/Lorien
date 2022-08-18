@@ -14,7 +14,16 @@ var _last_mouse_motion: InputEventMouseMotion
 
 # -------------------------------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	_cursor.set_pressure(1.0)
+
+	if event is InputEventScreenDrag:
+		end_stroke()
+		return
 	
 	if event is InputEventMouseMotion:
 		_last_mouse_motion = event

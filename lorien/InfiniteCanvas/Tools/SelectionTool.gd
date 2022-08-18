@@ -36,6 +36,11 @@ func _ready():
 
 # ------------------------------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			# LMB down - decide if we should select/multiselect or move the selection
@@ -238,7 +243,7 @@ func _deselect_marked_strokes() -> void:
 		s.modulate = Color.white
 
 # ------------------------------------------------------------------------------------------------
-func deselect_all_strokes() -> void:
+remote func deselect_all_strokes() -> void:
 	var selected_strokes: Array = get_selected_strokes()
 	if selected_strokes.size():
 		get_tree().set_group(GROUP_SELECTED_STROKES, "modulate", Color.white)

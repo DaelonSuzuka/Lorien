@@ -12,6 +12,11 @@ var _tail: Vector2
 
 # -------------------------------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
+	input(event)
+	if Network.connected:
+		rpc('input', event)
+
+remote func input(event: InputEvent) -> void:
 	_cursor.set_pressure(1.0)
 	
 	# Snap modifier
